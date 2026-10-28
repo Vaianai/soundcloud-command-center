@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SoundCloud Command Center</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="theme.css">
+</head>
+<body data-page="overview">
+    <div class="ambient ambient-one"></div>
+    <div class="ambient ambient-two"></div>
+
+    <div class="site-shell">
+        <header class="site-header panel reveal">
+            <a class="brand-mark" href="overview.html">
+                <span class="brand-icon">SC</span>
+                <span>
+                    <strong>Command Center</strong>
+                    <small>Live catalog + revenue intelligence</small>
+                </span>
+            </a>
+
+            <nav class="top-nav" aria-label="Primary">
+                <a class="nav-link" data-nav="overview" href="overview.html">Overview</a>
+                <a class="nav-link" data-nav="revenue" href="revenue.html">Revenue</a>
+                <a class="nav-link" data-nav="tracks" href="tracks.html">Tracks</a>
+            </nav>
+
+            <div class="header-actions">
+                <span class="status-pill" id="globalStatusPill">Revenue mode</span>
+                <a class="button ghost" id="connectButton" href="/auth/login">Connect SoundCloud</a>
+                <button class="button subtle" type="button" id="logoutButton" hidden>Disconnect</button>
+            </div>
+        </header>
+
+        <main class="page-grid overview-grid">
+            <section class="panel hero-panel span-8 reveal">
+                <div class="eyebrow">Overview</div>
+                <h1>See the real SoundCloud dashboard and your payout reports inside one dark multi-page workspace.</h1>
+                <p class="hero-copy">
+                    Connect your SoundCloud account for always-updated total plays and per-track stats, then merge it with imported revenue statements to understand
+                    which songs are monetized, which songs move listeners without payout, and where your catalog is actually converting.
+                </p>
+
+                <div class="hero-pill-row" aria-label="Overview summary">
+                    <span class="hero-pill" id="heroLiveSyncPill">Live sync offline</span>
+                    <span class="hero-pill" id="heroStatementPill">0 statements loaded</span>
+                    <span class="hero-pill" id="heroMonetizedPill">0 monetized tracks</span>
+                </div>
+
+                <div class="spotlight-grid" id="overviewSpotlights">
+                    <article class="spotlight-card">
+                        <span class="spotlight-label">Top live track</span>
+                        <strong id="spotlightLiveTitle">Connect SoundCloud</strong>
+                        <span class="spotlight-copy" id="spotlightLiveMeta">Live plays will appear here after the first sync.</span>
+                    </article>
+                    <article class="spotlight-card">
+                        <span class="spotlight-label">Top revenue track</span>
+                        <strong id="spotlightRevenueTitle">Import a payout CSV</strong>
+                        <span class="spotlight-copy" id="spotlightRevenueMeta">Revenue statements power the monetization layer.</span>
+                    </article>
+                    <article class="spotlight-card accent">
+                        <span class="spotlight-label">Largest uncovered track</span>
+                        <strong id="spotlightGapTitle">Waiting for live data</strong>
+                        <span class="spotlight-copy" id="spotlightGapMeta">The highest-play track without a payout match is useful to watch.</span>
+                    </article>
+                </div>
+            </section>
+
+            <aside class="panel stack-panel span-4 reveal">
+                <div class="panel-header compact-header">
+                    <div>
+                        <p class="section-kicker">Connection</p>
+                        <h2>SoundCloud status</h2>
+                    </div>
+                    <span class="status-dot" id="connectionDot"></span>
+                </div>
+
+                <div class="status-card" id="connectionStatusCard">
+                    <strong id="connectionStatusTitle">Server not connected</strong>
+                    <p id="connectionStatusCopy">
+                        Run the local server, add your SoundCloud app keys, then authorize your own account. The live overview and track-level analytics will unlock automatically.
+                    </p>
+                </div>
+
+                <div class="meta-list">
+                    <div class="meta-row">
+                        <span>Profile</span>
+                        <strong id="profileValue">Not loaded</strong>
+                    </div>
+                    <div class="meta-row">
+                        <span>Last live sync</span>
+                        <strong id="lastSyncValue">Never</strong>
+                    </div>
+                    <div class="meta-row">
+                        <span>Revenue archive</span>
+                        <strong id="archiveValue">0 files</strong>
+                    </div>
+                </div>
+
+                <div class="micro-callout" data-tooltip="This card blends your imported payout data with the current SoundCloud catalog.">
+                    <span class="callout-label">Cross insight</span>
+                    <strong id="coverageTitle">Monetized coverage</strong>
+                    <p id="coverageCopy">Track coverage becomes meaningful once both the live catalog and payout archive are present.</p>
+                </div>
+            </aside>
+
+            <section class="metric-grid span-12 reveal" aria-label="Overview metrics">
+                <article class="metric-card panel has-tooltip" data-tooltip="Sum of playback counts across the currently fetched SoundCloud track catalog.">
+                    <span class="metric-label">Total plays</span>
+                    <strong class="metric-value" id="totalPlaysMetric">0</strong>
+                    <span class="metric-subtext" id="totalPlaysMeta">Requires a live SoundCloud connection.</span>
+                </article>
+                <article class="metric-card panel has-tooltip" data-tooltip="All tracks returned by the authenticated SoundCloud account, including private entries when available.">
+                    <span class="metric-label">Catalog tracks</span>
+                    <strong class="metric-value" id="catalogTracksMetric">0</strong>
+                    <span class="metric-subtext" id="catalogTracksMeta">Tracks will appear after your first sync.</span>
+                </article>
+                <article class="metric-card panel has-tooltip" data-tooltip="Percentage of SoundCloud tracks that can be matched to imported revenue statements.">
+                    <span class="metric-label">Monetized share</span>
+                    <strong class="metric-value" id="monetizedShareMetric">0%</strong>
+                    <span class="metric-subtext" id="monetizedShareMeta">Based on track title or ISRC matches.</span>
+                </article>
+                <article class="metric-card panel has-tooltip" data-tooltip="Revenue total across every imported payout statement stored in the browser.">
+                    <span class="metric-label">Reported revenue</span>
+                    <strong class="metric-value" id="reportedRevenueMetric">$0.00</strong>
+                    <span class="metric-subtext" id="reportedRevenueMeta">Import SoundCloud payout CSV files on the Revenue page.</span>
+                </article>
+                <article class="metric-card panel has-tooltip" data-tooltip="Share of the catalog that is public versus private or unlisted.">
+                    <span class="metric-label">Public catalog share</span>
+                    <strong class="metric-value" id="publicShareMetric">0%</strong>
+                    <span class="metric-subtext" id="publicShareMeta">Useful to understand how much of the catalog is publicly exposed.</span>
+                </article>
+                <article class="metric-card panel has-tooltip" data-tooltip="Average plays per fetched track, useful for a quick catalog health check.">
+                    <span class="metric-label">Average plays / track</span>
+                    <strong class="metric-value" id="avgPlaysMetric">0</strong>
+                    <span class="metric-subtext" id="avgPlaysMeta">A fast signal for catalog depth versus concentration.</span>
+                </article>
+            </section>
+
+            <section class="panel span-7 reveal">
+                <div class="panel-header">
+                    <div>
+                        <p class="section-kicker">Momentum</p>
+                        <h2>Top tracks by plays</h2>
+                    </div>
+                    <p class="panel-copy">The songs currently carrying the most attention in your catalog.</p>
+                </div>
+                <div class="rank-list" id="overviewPlayRanks"></div>
+            </section>
+
+            <section class="panel span-5 reveal">
+                <div class="panel-header">
+                    <div>
+                        <p class="section-kicker">Catalog split</p>
+                        <h2>How the catalog is divided</h2>
+                    </div>
+                    <p class="panel-copy">A quick split between public/private tracks and payout coverage.</p>
+                </div>
+                <div class="donut-block">
+                    <div class="donut-chart" id="catalogSplitChart" aria-label="Catalog split"></div>
+                    <div class="legend-stack" id="catalogSplitLegend"></div>
+                </div>
+            </section>
+
+            <section class="panel span-12 reveal">
+                <div class="panel-header">
+                    <div>
+                        <p class="section-kicker">Combined detail</p>
+                        <h2>Revenue-aware catalog table</h2>
+                    </div>
+                    <p class="panel-copy">Live SoundCloud track data merged with imported payout signals, so you can scan songs one by one.</p>
+                </div>
+                <div class="table-shell">
+                    <table class="data-table" id="overviewTable">
+                        <thead>
+                            <tr>
+                                <th>Track</th>
+                                <th>Plays</th>
+                                <th>Reported revenue</th>
+                                <th>Reported streams</th>
+                                <th>Monetized</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <script type="module" src="overview.js"></script>
+</body>
+</html>

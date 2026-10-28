@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Revenue Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="theme.css">
+</head>
+<body data-page="revenue">
+    <div class="ambient ambient-one"></div>
+    <div class="ambient ambient-three"></div>
+
+    <div class="site-shell">
+        <header class="site-header panel reveal">
+            <a class="brand-mark" href="overview.html">
+                <span class="brand-icon">SC</span>
+                <span>
+                    <strong>Command Center</strong>
+                    <small>Live catalog + revenue intelligence</small>
+                </span>
+            </a>
+
+            <nav class="top-nav" aria-label="Primary">
+                <a class="nav-link" data-nav="overview" href="overview.html">Overview</a>
+                <a class="nav-link" data-nav="revenue" href="revenue.html">Revenue</a>
+                <a class="nav-link" data-nav="tracks" href="tracks.html">Tracks</a>
+            </nav>
+
+            <div class="header-actions">
+                <span class="status-pill" id="globalStatusPill">Revenue archive</span>
+                <a class="button ghost" id="connectButton" href="/auth/login">Connect SoundCloud</a>
+                <button class="button subtle" type="button" id="logoutButton" hidden>Disconnect</button>
+            </div>
+        </header>
+
+        <main class="page-grid revenue-grid">
+            <section class="panel hero-panel span-8 reveal">
+                <div class="eyebrow">Revenue</div>
+                <h1>Import monthly SoundCloud payout statements and keep the archive ready for clean updates every month.</h1>
+                <p class="hero-copy">
+                    Drag in one or more CSV statements, replace duplicated months automatically, and use the archive as the revenue layer for the entire dashboard.
+                </p>
+
+                <div class="hero-pill-row">
+                    <span class="hero-pill" id="revenueStatementPill">0 statements loaded</span>
+                    <span class="hero-pill" id="revenueMonthPill">0 reporting months</span>
+                    <span class="hero-pill" id="revenueRowPill">0 payout rows</span>
+                </div>
+
+                <div class="spotlight-grid">
+                    <article class="spotlight-card">
+                        <span class="spotlight-label">Best month</span>
+                        <strong id="bestMonthValue">$0.00</strong>
+                        <span class="spotlight-copy" id="bestMonthMeta">Import a statement to reveal your strongest month.</span>
+                    </article>
+                    <article class="spotlight-card">
+                        <span class="spotlight-label">Top revenue track</span>
+                        <strong id="bestTrackValue">No data yet</strong>
+                        <span class="spotlight-copy" id="bestTrackMeta">The top earner will appear here.</span>
+                    </article>
+                    <article class="spotlight-card accent">
+                        <span class="spotlight-label">Top 3 concentration</span>
+                        <strong id="topShareValue">0%</strong>
+                        <span class="spotlight-copy" id="topShareMeta">How much of total revenue comes from only three tracks.</span>
+                    </article>
+                </div>
+            </section>
+
+            <aside class="panel stack-panel span-4 reveal">
+                <div class="panel-header compact-header">
+                    <div>
+                        <p class="section-kicker">Monthly update</p>
+                        <h2>Import statements</h2>
+                    </div>
+                </div>
+
+                <p class="panel-copy compact-copy">
+                    Reimporting a single-month statement replaces the existing month. This keeps the archive tidy and easy to update.
+                </p>
+
+                <label class="dropzone" id="dropzone" for="fileInput">
+                    <input id="fileInput" type="file" accept=".csv" multiple>
+                    <span class="dropzone-badge">CSV</span>
+                    <strong>Drop SoundCloud payout files here</strong>
+                    <span>or click to select files manually</span>
+                </label>
+
+                <div class="button-row">
+                    <button class="button primary" type="button" id="selectFilesButton">Choose CSV files</button>
+                    <button class="button subtle" type="button" id="clearArchiveButton">Clear archive</button>
+                </div>
+
+                <div class="micro-callout" data-tooltip="This archive is stored in your browser, so the current device remembers imported statements.">
+                    <span class="callout-label">Storage</span>
+                    <strong id="archiveStatusTitle">Browser archive ready</strong>
+                    <p id="archiveStatusCopy">No uploads to external servers. Imported payout files stay local unless you decide otherwise.</p>
+                </div>
+            </aside>
+
+            <section class="metric-grid span-12 reveal" aria-label="Revenue metrics">
+                <article class="metric-card panel has-tooltip" data-tooltip="Total reported payout revenue across all imported statements.">
+                    <span class="metric-label">Total reported revenue</span>
+                    <strong class="metric-value" id="totalRevenueMetric">$0.00</strong>
+                    <span class="metric-subtext" id="totalRevenueMeta">All imported SoundCloud statements.</span>
+                </article>
+                <article class="metric-card panel has-tooltip" data-tooltip="Total reported streams from payout statements, not total SoundCloud plays.">
+                    <span class="metric-label">Reported streams</span>
+                    <strong class="metric-value" id="reportedStreamsMetric">0</strong>
+                    <span class="metric-subtext" id="reportedStreamsMeta">Units counted inside the imported payout archive.</span>
+                </article>
+                <article class="metric-card panel has-tooltip" data-tooltip="Revenue per 1,000 reported streams inside the payout archive.">
+                    <span class="metric-label">Revenue / 1,000 streams</span>
+                    <strong class="metric-value" id="rpmMetric">$0.00</strong>
+                    <span class="metric-subtext" id="rpmMeta">A strong comparison metric across months.</span>
+                </article>
+                <article class="metric-card panel has-tooltip" data-tooltip="Tracks that generated at least some reported revenue inside imported statements.">
+                    <span class="metric-label">Revenue-active tracks</span>
+                    <strong class="metric-value" id="activeTracksMetric">0</strong>
+                    <span class="metric-subtext" id="activeTracksMeta">Tracks with at least one payout row.</span>
+                </article>
+                <article class="metric-card panel has-tooltip" data-tooltip="Country contributing the largest share of reported revenue.">
+                    <span class="metric-label">Top market</span>
+                    <strong class="metric-value fit-text" id="topCountryMetric">-</strong>
+                    <span class="metric-subtext" id="topCountryMeta">Country with the highest revenue total.</span>
+                </article>
+                <article class="metric-card panel has-tooltip" data-tooltip="Revenue share from premium subscriber streams across the imported archive.">
+                    <span class="metric-label">Subscriber revenue share</span>
+                    <strong class="metric-value" id="subShareMetric">0%</strong>
+                    <span class="metric-subtext" id="subShareMeta">A direct view of premium listener contribution.</span>
+                </article>
+            </section>
+
+            <section class="panel span-8 reveal">
+                <div class="panel-header">
+                    <div>
+                        <p class="section-kicker">Trend</p>
+                        <h2>Reported revenue by month</h2>
+                    </div>
+                    <p class="panel-copy">Reporting Period is used as the month axis for the statement archive.</p>
+                </div>
+                <div class="chart-shell" id="monthlyTrendChart"></div>
+            </section>
+
+            <section class="panel span-4 reveal">
+                <div class="panel-header">
+                    <div>
+                        <p class="section-kicker">Mix</p>
+                        <h2>Revenue by stream type</h2>
+                    </div>
+                    <p class="panel-copy">Ad-supported versus subscriber revenue and any additional types you import.</p>
+                </div>
+                <div class="donut-block">
+                    <div class="donut-chart" id="typeMixChart" aria-label="Revenue split by stream type"></div>
+                    <div class="legend-stack" id="typeMixLegend"></div>
+                </div>
+            </section>
+
+            <section class="panel span-6 reveal">
+                <div class="panel-header">
+                    <div>
+                        <p class="section-kicker">Tracks</p>
+                        <h2>Top earners</h2>
+                    </div>
+                    <p class="panel-copy">Tracks currently producing the largest share of reported payouts.</p>
+                </div>
+                <div class="rank-list" id="trackRevenueRanks"></div>
+            </section>
+
+            <section class="panel span-6 reveal">
+                <div class="panel-header">
+                    <div>
+                        <p class="section-kicker">Countries</p>
+                        <h2>Top markets</h2>
+                    </div>
+                    <p class="panel-copy">Where revenue is coming from across the imported archive.</p>
+                </div>
+                <div class="rank-list" id="countryRevenueRanks"></div>
+            </section>
+
+            <section class="panel span-7 reveal">
+                <div class="panel-header">
+                    <div>
+                        <p class="section-kicker">Monthly table</p>
+                        <h2>Month-by-month breakdown</h2>
+                    </div>
+                    <p class="panel-copy">Reported revenue, streams, RPM, and top earning track for each month.</p>
+                </div>
+                <div class="table-shell">
+                    <table class="data-table" id="monthlyRevenueTable">
+                        <thead>
+                            <tr>
+                                <th>Month</th>
+                                <th>Revenue</th>
+                                <th>Streams</th>
+                                <th>RPM x1000</th>
+                                <th>Top track</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section class="panel span-5 reveal">
+                <div class="panel-header compact-header">
+                    <div>
+                        <p class="section-kicker">Archive</p>
+                        <h2>Saved statements</h2>
+                    </div>
+                </div>
+                <ul class="statement-list" id="statementList"></ul>
+            </section>
+
+            <section class="panel span-12 reveal">
+                <div class="panel-header">
+                    <div>
+                        <p class="section-kicker">Catalog revenue table</p>
+                        <h2>Track-level payout summary</h2>
+                    </div>
+                    <p class="panel-copy">A clean list of track revenue, reported streams, RPM, countries, and active months.</p>
+                </div>
+                <div class="table-shell">
+                    <table class="data-table" id="trackRevenueTable">
+                        <thead>
+                            <tr>
+                                <th>Track</th>
+                                <th>Revenue</th>
+                                <th>Streams</th>
+                                <th>RPM x1000</th>
+                                <th>Countries</th>
+                                <th>Months</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <script type="module" src="revenue.js"></script>
+</body>
+</html>

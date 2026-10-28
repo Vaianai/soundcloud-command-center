@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: soundcloud-command-center
+    env: node
+    buildCommand: npm install
+    startCommand: npm start
+    autoDeploy: true
+    healthCheckPath: /auth/status
+    envVars:
+      - key: SOUNDCLOUD_CLIENT_ID
+        sync: false
+      - key: SOUNDCLOUD_CLIENT_SECRET
+        sync: false
+      - key: SOUNDCLOUD_REDIRECT_URI
+        sync: false
+      - key: DASHBOARD_USERNAME
+        sync: false
+      - key: DASHBOARD_PASSWORD
+        sync: false

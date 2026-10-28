@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Track Explorer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="theme.css">
+</head>
+<body data-page="tracks">
+    <div class="ambient ambient-two"></div>
+    <div class="ambient ambient-three"></div>
+
+    <div class="site-shell">
+        <header class="site-header panel reveal">
+            <a class="brand-mark" href="overview.html">
+                <span class="brand-icon">SC</span>
+                <span>
+                    <strong>Command Center</strong>
+                    <small>Live catalog + revenue intelligence</small>
+                </span>
+            </a>
+
+            <nav class="top-nav" aria-label="Primary">
+                <a class="nav-link" data-nav="overview" href="overview.html">Overview</a>
+                <a class="nav-link" data-nav="revenue" href="revenue.html">Revenue</a>
+                <a class="nav-link" data-nav="tracks" href="tracks.html">Tracks</a>
+            </nav>
+
+            <div class="header-actions">
+                <span class="status-pill" id="globalStatusPill">Track explorer</span>
+                <a class="button ghost" id="connectButton" href="/auth/login">Connect SoundCloud</a>
+                <button class="button subtle" type="button" id="logoutButton" hidden>Disconnect</button>
+            </div>
+        </header>
+
+        <main class="page-grid tracks-grid">
+            <section class="panel hero-panel span-8 reveal">
+                <div class="eyebrow">Tracks</div>
+                <h1>Inspect every song individually, with live plays, engagement, payout matches, hover details, and fast filters.</h1>
+                <p class="hero-copy">
+                    This page is built for song-by-song analysis: identify hidden winners, revenue gaps, quiet-mode tracks, strong engagement, and the songs that are getting plays without matching payout signals yet.
+                </p>
+                <div class="hero-pill-row">
+                    <span class="hero-pill" id="trackPageCountPill">0 tracks loaded</span>
+                    <span class="hero-pill" id="trackPageMonetizedPill">0 monetized matches</span>
+                    <span class="hero-pill" id="trackPageHiddenPill">0 hidden-stat tracks</span>
+                </div>
+            </section>
+
+            <aside class="panel stack-panel span-4 reveal">
+                <div class="panel-header compact-header">
+                    <div>
+                        <p class="section-kicker">Live sync</p>
+                        <h2>Track feed status</h2>
+                    </div>
+                </div>
+                <div class="status-card" id="trackStatusCard">
+                    <strong id="trackStatusTitle">No live catalog yet</strong>
+                    <p id="trackStatusCopy">Connect SoundCloud and refresh the track feed to unlock the explorer.</p>
+                </div>
+                <div class="button-row single">
+                    <button class="button primary" id="refreshTracksButton" type="button">Refresh live tracks</button>
+                </div>
+                <div class="meta-list compact-list">
+                    <div class="meta-row">
+                        <span>Last sync</span>
+                        <strong id="tracksLastSyncValue">Never</strong>
+                    </div>
+                    <div class="meta-row">
+                        <span>Search results</span>
+                        <strong id="tracksResultCountValue">0</strong>
+                    </div>
+                </div>
+            </aside>
+
+            <section class="metric-grid span-12 reveal" aria-label="Track explorer metrics">
+                <article class="metric-card panel has-tooltip" data-tooltip="Tracks matched to imported payout data through title or ISRC matching.">
+                    <span class="metric-label">Monetized matches</span>
+                    <strong class="metric-value" id="tracksMonetizedMetric">0</strong>
+                    <span class="metric-subtext" id="tracksMonetizedMeta">Imported revenue and live catalog overlap.</span>
+                </article>
+                <article class="metric-card panel has-tooltip" data-tooltip="Tracks with stats hidden on SoundCloud, useful if you rely on reveal_stats settings.">
+                    <span class="metric-label">Quiet-mode tracks</span>
+                    <strong class="metric-value" id="tracksHiddenMetric">0</strong>
+                    <span class="metric-subtext" id="tracksHiddenMeta">Tracks hiding public stats on SoundCloud.</span>
+                </article>
+                <article class="metric-card panel has-tooltip" data-tooltip="Average engagement rate is likes + comments + reposts divided by plays.">
+                    <span class="metric-label">Avg engagement rate</span>
+                    <strong class="metric-value" id="tracksEngagementMetric">0%</strong>
+                    <span class="metric-subtext" id="tracksEngagementMeta">Engagement intensity across the fetched catalog.</span>
+                </article>
+                <article class="metric-card panel has-tooltip" data-tooltip="Most played track without a revenue match in the imported statement archive.">
+                    <span class="metric-label">Largest payout gap</span>
+                    <strong class="metric-value fit-text" id="tracksGapMetric">-</strong>
+                    <span class="metric-subtext" id="tracksGapMeta">This one deserves attention if plays are high.</span>
+                </article>
+            </section>
+
+            <section class="panel span-12 reveal">
+                <div class="toolbar">
+                    <label class="toolbar-field">
+                        <span>Search tracks</span>
+                        <input type="search" id="trackSearchInput" placeholder="Search by title, genre, or ISRC">
+                    </label>
+                    <label class="toolbar-field compact-field">
+                        <span>Sort</span>
+                        <select id="trackSortSelect">
+                            <option value="plays-desc">Plays</option>
+                            <option value="revenue-desc">Revenue</option>
+                            <option value="engagement-desc">Engagement rate</option>
+                            <option value="recent-desc">Newest</option>
+                            <option value="rpm-desc">RPM</option>
+                        </select>
+                    </label>
+                    <label class="toolbar-field compact-field">
+                        <span>Filter</span>
+                        <select id="trackFilterSelect">
+                            <option value="all">All tracks</option>
+                            <option value="monetized">Monetized only</option>
+                            <option value="unmonetized">Without payout match</option>
+                            <option value="public">Public only</option>
+                            <option value="private">Private only</option>
+                        </select>
+                    </label>
+                </div>
+            </section>
+
+            <section class="track-card-grid span-12 reveal" id="trackCardGrid"></section>
+        </main>
+    </div>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <script type="module" src="tracks.js"></script>
+</body>
+</html>
